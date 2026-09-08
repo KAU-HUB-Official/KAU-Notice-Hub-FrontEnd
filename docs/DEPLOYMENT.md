@@ -57,7 +57,7 @@ NEXT_PUBLIC_CONTACT_EMAIL=qktjwl123@gmail.com
 
 Search Console 속성도 운영 도메인 기준으로 등록한다.
 
-`NEXT_PUBLIC_GITHUB_URL`과 `NEXT_PUBLIC_CONTACT_EMAIL`은 공통 푸터에 노출되는 공개 링크다.
+`NEXT_PUBLIC_GITHUB_URL`과 `NEXT_PUBLIC_CONTACT_EMAIL`은 공통 푸터에 노출되는 공개 링크다. `NEXT_PUBLIC_CONTACT_EMAIL`은 `/about`, `/privacy`의 문의처로도 쓰인다.
 
 ## 백엔드 계약
 
