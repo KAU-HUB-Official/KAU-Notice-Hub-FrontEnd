@@ -87,7 +87,7 @@ yarn dev
 
 ## SEO 설정
 
-`NEXT_PUBLIC_SITE_URL`은 canonical URL, Open Graph, `sitemap.xml`, `robots.txt`의 기준 origin입니다. 운영에서는 실제 배포 도메인으로 설정하고, 미설정 시 기본값 `https://kau-notice-hub.vercel.app`을 사용합니다.
+`NEXT_PUBLIC_SITE_URL`은 canonical URL, Open Graph, `sitemap.xml`, `robots.txt`의 기준 origin입니다. 미설정 시 운영 도메인 `https://kau-notice-hub.app`을 사용합니다. 운영 환경에서 이 값을 다른 도메인으로 설정하면 canonical과 sitemap이 그 도메인을 가리키므로, Vercel 기본 별칭(`*.vercel.app`)으로 덮어쓰지 않도록 주의하세요.
 
 ## API 프록시
 

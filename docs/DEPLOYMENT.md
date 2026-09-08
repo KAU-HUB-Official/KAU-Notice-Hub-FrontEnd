@@ -30,7 +30,7 @@ Browser
 
 ```env
 NEXT_PUBLIC_API_BASE_URL=https://api.example.com
-NEXT_PUBLIC_SITE_URL=https://kau-notice-hub.vercel.app
+NEXT_PUBLIC_SITE_URL=https://kau-notice-hub.app
 NEXT_PUBLIC_GITHUB_URL=https://github.com/KAU-HUB-Official
 NEXT_PUBLIC_CONTACT_EMAIL=qktjwl123@gmail.com
 ```
@@ -46,7 +46,16 @@ NEXT_PUBLIC_CONTACT_EMAIL=qktjwl123@gmail.com
 
 서버에서만 다른 백엔드 주소를 써야 하면 `NOTICE_API_BASE_URL`을 추가한다. 우선순위는 `NOTICE_API_BASE_URL`, `NEXT_PUBLIC_API_BASE_URL`, `http://localhost:8000` 순서다.
 
-`NEXT_PUBLIC_SITE_URL`은 SEO 메타데이터(canonical URL, Open Graph, `sitemap.xml`, `robots.txt`)의 기준 origin이다. 운영에서는 실제 배포 도메인으로 설정한다. 미설정 시 기본값 `https://kau-notice-hub.vercel.app`을 사용한다.
+`NEXT_PUBLIC_SITE_URL`은 SEO 메타데이터(canonical URL, Open Graph, `sitemap.xml`, `robots.txt`)의 기준 origin이다. 미설정 시 기본값 `https://kau-notice-hub.app`을 사용한다.
+
+## 도메인
+
+운영 도메인은 `https://kau-notice-hub.app`이다. Vercel 기본 별칭 `kau-notice-hub.vercel.app`으로도 같은 배포가 열리므로, 색인이 두 도메인으로 쪼개지지 않게 두 가지를 맞춘다.
+
+1. `next.config.mjs`의 `redirects()`가 `kau-notice-hub.vercel.app` 요청을 운영 도메인으로 308 이동시킨다. 도메인을 바꾸면 `PRODUCTION_HOST`와 `LEGACY_HOSTS`를 함께 갱신한다.
+2. Vercel 프로젝트의 `NEXT_PUBLIC_SITE_URL`은 운영 도메인이거나 미설정이어야 한다. `*.vercel.app`으로 설정하면 canonical과 sitemap이 별칭 도메인을 가리킨다.
+
+Search Console 속성도 운영 도메인 기준으로 등록한다.
 
 `NEXT_PUBLIC_GITHUB_URL`과 `NEXT_PUBLIC_CONTACT_EMAIL`은 공통 푸터에 노출되는 공개 링크다.
 
