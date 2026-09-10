@@ -1,4 +1,4 @@
-const DEFAULT_SITE_URL = "https://kau-notice-hub.vercel.app";
+const DEFAULT_SITE_URL = "https://kau-notice-hub.app";
 
 function resolveSiteUrl(): string {
   const fromEnv = process.env.NEXT_PUBLIC_SITE_URL?.trim();

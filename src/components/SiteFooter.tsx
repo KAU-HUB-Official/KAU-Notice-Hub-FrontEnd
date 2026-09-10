@@ -28,9 +28,25 @@ export default function SiteFooter() {
             분산된 학교 공지를 한 곳에서 확인할 수 있도록 제공하는 통합 탐색
             서비스입니다.
           </p>
+          <p className="mt-2 max-w-2xl text-xs leading-5 text-slate-500">
+            한국항공대학교 공식 서비스가 아닙니다. 공지의 저작권은 각 원문 게시
+            기관에 있으며, 중요한 내용은 원문에서 확인해 주세요.
+          </p>
         </div>
 
         <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium">
+          <Link
+            href="/about"
+            className="rounded-md border border-slate-700 px-3 py-2 text-slate-200 hover:border-slate-500 hover:bg-slate-900 hover:text-white"
+          >
+            서비스 소개
+          </Link>
+          <Link
+            href="/privacy"
+            className="rounded-md border border-slate-700 px-3 py-2 text-slate-200 hover:border-slate-500 hover:bg-slate-900 hover:text-white"
+          >
+            개인정보처리방침
+          </Link>
           <Link
             href={githubUrl}
             target="_blank"

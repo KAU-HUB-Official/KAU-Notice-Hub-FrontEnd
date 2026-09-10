@@ -85,9 +85,18 @@ yarn dev
 - `NEXT_PUBLIC_GITHUB_URL`
 - `NEXT_PUBLIC_CONTACT_EMAIL`
 
+`NEXT_PUBLIC_CONTACT_EMAIL`은 푸터뿐 아니라 `/about`, `/privacy`의 문의처에도 함께 노출됩니다.
+
 ## SEO 설정
 
-`NEXT_PUBLIC_SITE_URL`은 canonical URL, Open Graph, `sitemap.xml`, `robots.txt`의 기준 origin입니다. 운영에서는 실제 배포 도메인으로 설정하고, 미설정 시 기본값 `https://kau-notice-hub.vercel.app`을 사용합니다.
+`NEXT_PUBLIC_SITE_URL`은 canonical URL, Open Graph, `sitemap.xml`, `robots.txt`의 기준 origin입니다. 미설정 시 운영 도메인 `https://kau-notice-hub.app`을 사용합니다. 운영 환경에서 이 값을 다른 도메인으로 설정하면 canonical과 sitemap이 그 도메인을 가리키므로, Vercel 기본 별칭(`*.vercel.app`)으로 덮어쓰지 않도록 주의하세요.
+
+## 안내 페이지
+
+공통 푸터에서 모든 페이지에서 접근할 수 있습니다.
+
+- `/about`: 서비스 소개, 데이터 출처, 비공식 서비스 고지
+- `/privacy`: 개인정보처리방침, 수집 항목과 처리 위탁 안내
 
 ## API 프록시
 
@@ -115,6 +124,8 @@ POST /api/chat/stream   # SSE(text/event-stream) 스트리밍 응답, 챗봇 UI 
 
 ```text
 src/app                 Next.js 페이지, API route handler, SEO(sitemap/robots/OG)
+src/app/about           서비스 소개
+src/app/privacy         개인정보처리방침
 src/components          공지 탐색, 목록, 상세 표시, Markdown 본문, 챗봇 UI
 src/lib/types.ts        프론트 타입
 src/lib/notices.ts      필터 sentinel, source 표시 유틸, 링크 스킴 검증
