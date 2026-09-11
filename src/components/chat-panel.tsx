@@ -32,7 +32,7 @@ const sleep = (ms: number) =>
 const STICK_TO_BOTTOM_THRESHOLD_PX = 80;
 
 const PRIVACY_NOTICE =
-  "요청은 익명으로 처리되며, 챗봇 개선을 위해 활용될 수 있습니다.";
+  "요청은 익명으로 처리되며, 챗봇 개선과 학술 연구를 위해 활용될 수 있습니다.";
 const ACCURACY_NOTICE =
   "AI 답변은 부정확할 수 있어요. 마감일 등 중요한 정보는 근거 공지 원문에서 꼭 확인하세요.";
 
