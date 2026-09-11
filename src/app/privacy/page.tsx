@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const CONTACT_EMAIL =
   process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || "qktjwl123@gmail.com";
 
-const EFFECTIVE_DATE = "2026년 9월 2일";
+const EFFECTIVE_DATE = "2026년 9월 11일";
 
 function Section({
   title,
@@ -74,7 +74,10 @@ export default function PrivacyPage() {
               이용자가 챗봇에 입력한 질문과 그에 대한 답변, 그리고 한 번의
               대화를 구분하기 위해 브라우저에서 임의로 생성한 세션 식별자가
               저장됩니다. 이 식별자는 개인을 식별하지 않으며, 답변 품질 개선과
-              오류 분석에 사용합니다.
+              오류 분석에 사용합니다. 또한 개인을 식별할 수 없도록 처리한 뒤
+              검색 품질 연구에 활용할 수 있습니다. 연구 결과는 통계와 일부 질문
+              예시의 형태로 학술 논문 등에 공개될 수 있으며, 원본 대화 기록은
+              외부에 공개하지 않습니다.
             </li>
             <li>
               <span className="font-medium text-slate-900">이용 통계</span> —
