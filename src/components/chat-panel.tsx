@@ -31,8 +31,6 @@ const sleep = (ms: number) =>
 // 사용자가 위로 올려 읽는 중이면 스트리밍이 화면을 끌어내리지 않는다.
 const STICK_TO_BOTTOM_THRESHOLD_PX = 80;
 
-const PRIVACY_NOTICE =
-  "요청은 익명으로 처리되며, 챗봇 개선과 학술 연구를 위해 활용될 수 있습니다.";
 const ACCURACY_NOTICE =
   "AI 답변은 부정확할 수 있어요. 마감일 등 중요한 정보는 근거 공지 원문에서 꼭 확인하세요.";
 
@@ -433,17 +431,7 @@ export default function ChatPanel({
           ) : null}
         </div>
 
-        {isSheet ? (
-          // 모바일 시트에서는 메시지 영역을 최대한 확보하려고 두 안내를 한 문단으로 합친다.
-          <p className="mt-1 text-xs leading-5 text-slate-500">
-            {PRIVACY_NOTICE} {ACCURACY_NOTICE}
-          </p>
-        ) : (
-          <>
-            <p className="mt-1 text-sm text-slate-600">{PRIVACY_NOTICE}</p>
-            <p className="mt-0.5 text-xs text-slate-500">{ACCURACY_NOTICE}</p>
-          </>
-        )}
+        <p className="mt-1 text-xs leading-5 text-slate-500">{ACCURACY_NOTICE}</p>
       </div>
 
       <div
