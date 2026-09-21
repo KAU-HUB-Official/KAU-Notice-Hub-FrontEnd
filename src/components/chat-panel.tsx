@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
-import { safeHttpUrl, shouldUseSourceFilter } from "@/lib/notices";
+import { safeHttpUrl } from "@/lib/notices";
 import { ChatStreamEvent, NoticeReference } from "@/lib/types";
 
 interface ChatMessage {
@@ -142,7 +141,6 @@ export default function ChatPanel({
   variant = "embedded",
   onClose,
 }: ChatPanelProps = {}) {
-  const searchParams = useSearchParams();
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([INITIAL_MESSAGE]);
@@ -261,12 +259,6 @@ export default function ChatPanel({
     ]);
 
     try {
-      const audienceGroup = searchParams.get("audience") ?? undefined;
-      const sourceGroup = searchParams.get("group") ?? undefined;
-      const source = shouldUseSourceFilter(audienceGroup)
-        ? (searchParams.get("source") ?? undefined)
-        : undefined;
-
       // 직전 대화를 history로 전달해 후속 질문 맥락을 유지한다. 인사말/진행중/에러
       // 메시지는 빼고, 완료된 user·assistant 턴만 보낸다. 서버가 최근 10개로 자른다.
       const history = messages
@@ -288,9 +280,6 @@ export default function ChatPanel({
         body: JSON.stringify({
           question,
           history,
-          audienceGroup,
-          sourceGroup,
-          source,
           sessionId: sessionIdRef.current,
         }),
       });

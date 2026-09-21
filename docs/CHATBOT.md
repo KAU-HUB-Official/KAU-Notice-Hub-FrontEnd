@@ -1,16 +1,15 @@
 # 챗봇
 
-챗봇 UI는 프론트 `/api/chat/stream` route handler를 통해 백엔드 `/api/chat/stream`을 호출하고, SSE(`text/event-stream`)로 스트리밍 응답을 받는다. 프론트는 질문과 현재 필터 범위만 전달하고, 답변 생성은 백엔드가 담당한다.
+챗봇 UI는 프론트 `/api/chat/stream` route handler를 통해 백엔드 `/api/chat/stream`을 호출하고, SSE(`text/event-stream`)로 스트리밍 응답을 받는다. 프론트는 질문과 직전 대화만 전달하고, 답변 생성은 백엔드가 담당한다. 목록 화면에서 고른 필터(대상·그룹·출처)는 챗봇 검색에 넘기지 않는다. 필터를 켠 줄 모르고 질문하면 그 범위 밖 공지를 찾지 못해서다.
 
 단발 JSON 응답이 필요한 경우를 위해 `/api/chat`(스트리밍 없음)도 함께 유지한다. 현재 화면(`ChatPanel`)은 `/api/chat/stream`만 사용한다.
 
 ## 요청 흐름
 
 1. 사용자가 `ChatPanel`에 질문을 입력한다.
-2. 현재 URL의 `audience`, `group`, `source`를 함께 읽는다.
-3. `source`는 허용된 대상자에서만 요청에 포함한다.
-4. `/api/chat/stream` route handler가 백엔드 `/api/chat/stream`으로 전달한다.
-5. 백엔드가 보내는 SSE 이벤트를 순서대로 처리해 검색 상태, 근거 공지, 최종 답변을 점진적으로 화면에 반영한다.
+2. 질문과 직전 대화(`history`)만 요청에 담는다. 목록 필터(URL의 `audience`, `group`, `source`)는 넣지 않는다.
+3. `/api/chat/stream` route handler가 백엔드 `/api/chat/stream`으로 전달한다.
+4. 백엔드가 보내는 SSE 이벤트를 순서대로 처리해 검색 상태, 근거 공지, 최종 답변을 점진적으로 화면에 반영한다.
 
 route handler는 응답이 버퍼링되지 않도록 `Cache-Control: no-cache, no-transform`, `Connection: keep-alive`, `X-Accel-Buffering: no` 헤더를 함께 내려준다.
 
@@ -30,6 +29,8 @@ interface ChatRequestBody {
 ```
 
 `question`은 필수이며 route handler에서 빈 문자열과 500자 초과 입력을 거부한다.
+
+`audienceGroup`·`sourceGroup`·`source`·`category`·`department`는 API가 받기는 하지만 `ChatPanel`은 보내지 않는다.
 
 `sessionId`는 한 대화 흐름을 묶는 식별자다. `ChatPanel`이 마운트될 때(=새 대화) 브라우저에서
 한 번 생성해 이후 모든 턴이 같은 값을 보낸다. 백엔드 세션 로깅이 켜져 있을 때만 사용되며,
