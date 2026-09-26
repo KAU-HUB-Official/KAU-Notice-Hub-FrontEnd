@@ -1,3 +1,4 @@
+import AccountMenu from "@/components/AccountMenu";
 import ChatLauncher from "@/components/chat-launcher";
 import ChatPanel from "@/components/chat-panel";
 import NoticeExplorer, {
@@ -127,7 +128,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
       <div className="mx-auto w-full max-w-7xl min-w-0">
-        <header className="mb-6 min-w-0 border-b border-slate-200 pb-6">
+        <header className="mb-6 flex min-w-0 flex-col-reverse gap-3 border-b border-slate-200 pb-6 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div className="min-w-0">
             <p className="text-sm font-semibold text-brand-700">
               KAU Notice Hub
@@ -139,6 +140,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               필요한 공지를 빠르게 찾고, 궁금한 내용은 공지 기반 챗봇으로
               확인하세요.
             </p>
+          </div>
+          <div className="self-end sm:shrink-0 sm:self-start">
+            <AccountMenu />
           </div>
         </header>
 

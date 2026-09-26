@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import BookmarkButton from "@/components/BookmarkButton";
+
 import { formatSourceLabel, getNoticeSourceNames } from "@/lib/notices";
 import { Notice } from "@/lib/types";
 
@@ -49,9 +51,9 @@ export default function NoticeCard({ notice, showCategory }: NoticeCardProps) {
       : sourceNames.map(formatSourceLabel).join(", ");
 
   return (
-    <article className="group w-full min-w-0 rounded-lg border border-slate-200 bg-white p-3.5 transition hover:border-brand-300 hover:shadow-sm md:p-4">
+    <article className="group relative w-full min-w-0 rounded-lg border border-slate-200 bg-white p-3.5 transition hover:border-brand-300 hover:shadow-sm md:p-4">
       <Link href={`/notices/${encodeURIComponent(notice.id)}`} className="block min-w-0">
-        <h3 className="line-clamp-2 break-words text-base font-semibold leading-snug text-slate-950 group-hover:text-brand-800">
+        <h3 className="line-clamp-2 break-words pr-8 text-base font-semibold leading-snug text-slate-950 group-hover:text-brand-800">
           {notice.title}
         </h3>
 
@@ -83,6 +85,9 @@ export default function NoticeCard({ notice, showCategory }: NoticeCardProps) {
           <p className="mt-1.5 line-clamp-2 break-words text-sm leading-6 text-slate-600">{summary}</p>
         ) : null}
       </Link>
+      <div className="absolute right-2 top-2">
+        <BookmarkButton noticeId={notice.id} />
+      </div>
     </article>
   );
 }
