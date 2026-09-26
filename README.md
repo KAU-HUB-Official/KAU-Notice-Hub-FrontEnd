@@ -12,6 +12,7 @@ KAU Notice Hub 백엔드 API를 화면에서 탐색하고, 공지 기반 챗봇�
 - 현재 필터 범위를 반영한 공지 챗봇 (SSE 스트리밍 응답)
 - 데스크톱은 사이드바 챗봇, 모바일은 우하단 버튼으로 여는 전체화면 챗봇 시트
 - SEO 메타데이터, Open Graph 이미지, `sitemap.xml`, `robots.txt`
+- 카카오 로그인, 공지 북마크(목록·상세의 북마크 버튼, `/bookmarks` 내 북마크), 회원 탈퇴
 
 ## 기술 스택
 
@@ -96,7 +97,13 @@ yarn dev
 공통 푸터에서 모든 페이지에서 접근할 수 있습니다.
 
 - `/about`: 서비스 소개, 데이터 출처, 비공식 서비스 고지
-- `/privacy`: 개인정보처리방침, 수집 항목과 처리 위탁 안내
+- `/privacy`: 개인정보처리방침, 수집 항목(카카오 회원번호 포함)과 처리 위탁 안내
+
+로그인 이용자 페이지:
+
+- `/bookmarks`: 내 북마크 목록, 목록에서 내려간 공지는 저장된 제목·원문 링크로 표시, 회원 탈퇴
+- `/auth/kakao/login?next=/경로`: 카카오 로그인 시작
+- `/auth/kakao/callback`: 카카오 Redirect URI. state 확인 뒤 로그인 쿠키를 저장하고 `next`로 돌아감
 
 ## API 프록시
 
@@ -107,6 +114,15 @@ GET  /api/notices
 GET  /api/notices/[id]
 POST /api/chat          # 단발 JSON 응답
 POST /api/chat/stream   # SSE(text/event-stream) 스트리밍 응답, 챗봇 UI 기본 경로
+
+# 로그인 필요. 토큰은 httpOnly 쿠키에서 BFF가 꺼내 Authorization: Bearer로 붙인다
+GET    /api/me
+DELETE /api/me                     # 회원 탈퇴 (북마크도 삭제, 쿠키 삭제)
+POST   /api/auth/logout            # 쿠키만 삭제
+GET    /api/bookmarks?page&pageSize
+GET    /api/bookmarks/ids          # 북마크 아이콘 표시용. 401이면 로그아웃 상태
+PUT    /api/bookmarks/[noticeId]
+DELETE /api/bookmarks/[noticeId]
 ```
 
 목록 query parameter:
@@ -126,11 +142,15 @@ POST /api/chat/stream   # SSE(text/event-stream) 스트리밍 응답, 챗봇 UI 
 src/app                 Next.js 페이지, API route handler, SEO(sitemap/robots/OG)
 src/app/about           서비스 소개
 src/app/privacy         개인정보처리방침
+src/app/bookmarks       내 북마크
+src/app/auth/kakao      카카오 로그인 시작·콜백
 src/components          공지 탐색, 목록, 상세 표시, Markdown 본문, 챗봇 UI
 src/lib/types.ts        프론트 타입
 src/lib/notices.ts      필터 sentinel, source 표시 유틸, 링크 스킴 검증
 src/lib/site.ts         사이트 메타데이터, 메타 설명 생성 유틸
 src/server/notices      백엔드 API 클라이언트
+src/server/auth         로그인 쿠키, 카카오 Redirect URI, 로그인 필요 route 공통 처리
+src/lib/bookmark-store.ts 로그인 상태와 북마크 ID 공유 (useSyncExternalStore)
 docs                    운영에 필요한 보조 문서
 ```
 
