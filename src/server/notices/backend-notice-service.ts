@@ -1,4 +1,8 @@
 import {
+  AuthResult,
+  Bookmark,
+  BookmarkIdsResult,
+  BookmarkListResult,
   ChatAnswer,
   ChatRequestBody,
   Notice,
@@ -6,7 +10,8 @@ import {
   NoticeListResult,
   NoticeNavigation,
   NoticeNavigationItem,
-  NoticeQuery
+  NoticeQuery,
+  User
 } from "@/lib/types";
 
 import { headers as nextHeaders } from "next/headers";
@@ -113,6 +118,10 @@ function normalizeNoticeListResult(result: NoticeListResult): NoticeListResult {
     totalPages: Number.isFinite(result.totalPages) ? result.totalPages : 1,
     facets: normalizeFacets(result.facets)
   };
+}
+
+function authHeaders(accessToken: string): Record<string, string> {
+  return { Authorization: `Bearer ${accessToken}` };
 }
 
 function toNoticeNavigationItem(notice: Notice): NoticeNavigationItem {
@@ -264,6 +273,85 @@ export class BackendNoticeService {
       previous: null,
       next: null
     };
+  }
+
+  // 카카오 로그인·북마크. 토큰은 BFF가 httpOnly 쿠키에서 꺼내 넘긴다(src/server/auth/session.ts).
+  async loginWithKakao(code: string, redirectUri: string): Promise<AuthResult> {
+    return requestBackendJson<AuthResult>(
+      "/api/auth/kakao",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, redirectUri })
+      },
+      "로그인을 처리하지 못했습니다."
+    );
+  }
+
+  async getMe(accessToken: string): Promise<User> {
+    return requestBackendJson<User>(
+      "/api/me",
+      { headers: authHeaders(accessToken) },
+      "사용자 정보를 확인하지 못했습니다."
+    );
+  }
+
+  async deleteMe(accessToken: string): Promise<void> {
+    await requestBackendJson<null>(
+      "/api/me",
+      { method: "DELETE", headers: authHeaders(accessToken) },
+      "회원 탈퇴를 처리하지 못했습니다."
+    );
+  }
+
+  async listBookmarks(
+    accessToken: string,
+    page = 1,
+    pageSize = 20
+  ): Promise<BookmarkListResult> {
+    const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+    const result = await requestBackendJson<BookmarkListResult>(
+      `/api/bookmarks?${params.toString()}`,
+      { headers: authHeaders(accessToken) },
+      "북마크 목록을 불러오지 못했습니다."
+    );
+    return {
+      items: Array.isArray(result.items)
+        ? result.items.map((item) => ({
+            ...item,
+            notice: item.notice ? normalizeNotice(item.notice) : null
+          }))
+        : [],
+      total: Number.isFinite(result.total) ? result.total : 0,
+      page: Number.isFinite(result.page) ? result.page : 1,
+      pageSize: Number.isFinite(result.pageSize) ? result.pageSize : pageSize,
+      totalPages: Number.isFinite(result.totalPages) ? result.totalPages : 1
+    };
+  }
+
+  async getBookmarkIds(accessToken: string): Promise<string[]> {
+    const result = await requestBackendJson<BookmarkIdsResult>(
+      "/api/bookmarks/ids",
+      { headers: authHeaders(accessToken) },
+      "북마크 목록을 불러오지 못했습니다."
+    );
+    return Array.isArray(result.noticeIds) ? result.noticeIds : [];
+  }
+
+  async addBookmark(accessToken: string, noticeId: string): Promise<Bookmark> {
+    return requestBackendJson<Bookmark>(
+      `/api/bookmarks/${encodeURIComponent(noticeId)}`,
+      { method: "PUT", headers: authHeaders(accessToken) },
+      "북마크를 저장하지 못했습니다."
+    );
+  }
+
+  async removeBookmark(accessToken: string, noticeId: string): Promise<void> {
+    await requestBackendJson<null>(
+      `/api/bookmarks/${encodeURIComponent(noticeId)}`,
+      { method: "DELETE", headers: authHeaders(accessToken) },
+      "북마크를 삭제하지 못했습니다."
+    );
   }
 
   async askChat(body: ChatRequestBody): Promise<ChatAnswer> {
