@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import BookmarkButton from "@/components/BookmarkButton";
 import { MarkdownContent } from "@/components/MarkdownContent";
 import { formatSourceLabel, getNoticeSourceNames, safeHttpUrl } from "@/lib/notices";
 import { buildMetaDescription, siteConfig } from "@/lib/site";
@@ -113,9 +114,12 @@ export default async function NoticeDetailPage({ params }: NoticeDetailPageProps
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="mx-auto w-full min-w-0 max-w-4xl rounded-lg border border-slate-200 bg-white p-5 shadow-sm md:p-8">
-        <Link href="/" className="inline-flex rounded-md border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-950">
-          ← 목록으로 돌아가기
-        </Link>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Link href="/" className="inline-flex rounded-md border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-950">
+            ← 목록으로 돌아가기
+          </Link>
+          <BookmarkButton noticeId={notice.id} variant="labeled" />
+        </div>
 
         <h1 className="mt-5 break-words text-2xl font-bold tracking-tight text-slate-950 md:text-3xl">{notice.title}</h1>
 

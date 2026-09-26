@@ -44,6 +44,19 @@ NEXT_PUBLIC_GITHUB_URL=https://github.com/KAU-HUB-Official
 NEXT_PUBLIC_CONTACT_EMAIL=qktjwl123@gmail.com
 ```
 
+카카오 로그인(서버 전용, `NEXT_PUBLIC_` 아님):
+
+```env
+KAKAO_REST_API_KEY=<카카오 앱 REST API 키>
+# 선택. 비우면 NEXT_PUBLIC_SITE_URL + /auth/kakao/callback
+KAKAO_REDIRECT_URI=https://kau-notice-hub.app/auth/kakao/callback
+```
+
+- `KAKAO_REST_API_KEY`는 백엔드와 같은 값이다. 인가 URL의 `client_id`로만 쓴다. 클라이언트 시크릿과 JWT 키는 백엔드에만 둔다.
+- Redirect URI는 카카오 콘솔 등록값, 백엔드 `KAKAO_ALLOWED_REDIRECT_URIS`와 글자까지 같아야 한다. 로컬은 `http://localhost:3000/auth/kakao/callback`.
+- `KAKAO_REST_API_KEY`가 없으면 로그인 버튼을 눌러도 원래 페이지로 돌아와 "지금은 로그인을 사용할 수 없습니다"를 보여 준다. 공지·챗봇은 그대로 동작한다.
+- 로그인 쿠키(`knh_session`)는 httpOnly·SameSite=Lax·운영에서 Secure, 백엔드가 준 `expiresIn`(기본 14일)만큼 유지한다.
+
 서버에서만 다른 백엔드 주소를 써야 하면 `NOTICE_API_BASE_URL`을 추가한다. 우선순위는 `NOTICE_API_BASE_URL`, `NEXT_PUBLIC_API_BASE_URL`, `http://localhost:8000` 순서다.
 
 `NEXT_PUBLIC_SITE_URL`은 SEO 메타데이터(canonical URL, Open Graph, `sitemap.xml`, `robots.txt`)의 기준 origin이다. 미설정 시 기본값 `https://kau-notice-hub.app`을 사용한다.
@@ -69,7 +82,17 @@ GET  /api/notices/{id}
 POST /api/chat
 POST /api/chat/stream   # text/event-stream, SSE
 GET  /health
+
+POST   /api/auth/kakao           # 카카오 인가 code → 자체 토큰
+GET    /api/me
+DELETE /api/me
+GET    /api/bookmarks
+GET    /api/bookmarks/ids
+PUT    /api/bookmarks/{noticeId}
+DELETE /api/bookmarks/{noticeId}
 ```
+
+로그인·북마크 계약은 백엔드 `docs/API_SPEC.md`(User, AuthResult, Bookmark)와 `docs/AUTH_BOOKMARK_API.md`가 기준이다.
 
 `/api/chat/stream`은 SSE(`text/event-stream`)를 반환하고, Next.js route handler가 그대로 클라이언트로 전달한다. Vercel은 Node.js 런타임에서 chunked streaming을 지원하므로 추가 설정은 필요 없다. 다만 응답이 버퍼링되지 않도록 라우트에서 `Cache-Control: no-cache, no-transform`과 `X-Accel-Buffering: no`를 항상 함께 내려준다.
 

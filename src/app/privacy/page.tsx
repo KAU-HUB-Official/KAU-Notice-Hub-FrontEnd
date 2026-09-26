@@ -6,7 +6,7 @@ import { siteConfig } from "@/lib/site";
 export const metadata: Metadata = {
   title: "개인정보처리방침",
   description:
-    "KAU Notice Hub가 수집하는 정보, 쿠키 사용 여부, 처리 위탁 현황과 이용자의 선택권을 안내합니다.",
+    "KAU Notice Hub가 수집하는 정보(카카오 로그인 포함), 쿠키 사용, 처리 위탁 현황과 이용자의 선택권을 안내합니다.",
   alternates: {
     canonical: "/privacy",
   },
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const CONTACT_EMAIL =
   process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || "qktjwl123@gmail.com";
 
-const EFFECTIVE_DATE = "2026년 9월 11일";
+const EFFECTIVE_DATE = "2026년 9월 26일";
 
 function Section({
   title,
@@ -56,8 +56,30 @@ export default function PrivacyPage() {
 
         <Section title="1. 회원가입과 개인정보 수집">
           <p>
-            서비스는 회원가입 절차가 없으며, 이름·학번·연락처 등 이용자를 직접
-            식별할 수 있는 개인정보를 입력받거나 저장하지 않습니다.
+            공지 검색과 챗봇은 로그인 없이 이용할 수 있습니다. 북마크 기능을 쓰려는
+            이용자만 카카오 계정으로 로그인합니다.
+          </p>
+          <ul className="list-disc space-y-2 pl-5">
+            <li>
+              <span className="font-medium text-slate-900">카카오 로그인 시 수집 항목</span>{" "}
+              — 카카오가 제공하는 <span className="font-medium">카카오 회원번호</span>
+              하나만 받습니다. 이름, 닉네임, 프로필 사진, 이메일, 전화번호 등 다른
+              정보는 동의 항목으로 요청하지 않으며 받지 않습니다.
+            </li>
+            <li>
+              <span className="font-medium text-slate-900">함께 저장하는 정보</span> —
+              서비스 안에서 쓰는 임의의 사용자 번호, 가입·최근 로그인 시각, 이용자가
+              북마크한 공지(공지 번호, 북마크 시각, 북마크 당시의 공지 제목·원문
+              주소·게시 홈페이지·게시일).
+            </li>
+            <li>
+              <span className="font-medium text-slate-900">이용 목적</span> — 로그인한
+              이용자를 구별하고 북마크를 저장·표시하기 위해서만 사용합니다. 카카오
+              회원번호는 화면이나 외부로 내보내지 않습니다.
+            </li>
+          </ul>
+          <p>
+            학번·연락처 등 이용자를 직접 식별할 수 있는 정보는 입력받지 않습니다.
           </p>
         </Section>
 
@@ -95,6 +117,12 @@ export default function PrivacyPage() {
             새로 고치면 사라집니다.
           </p>
           <p>
+            카카오로 로그인하면 로그인 상태를 유지하기 위한 쿠키 하나를 저장합니다.
+            이 쿠키는 브라우저 스크립트가 읽을 수 없도록 설정되어 있고, 최대 14일
+            뒤 또는 로그아웃·회원 탈퇴 시 삭제됩니다. 로그인하는 동안에는 위조
+            요청을 막기 위한 임시 쿠키가 최대 10분간 저장됩니다.
+          </p>
+          <p>
             이용 통계에 사용하는 Vercel Analytics와 Speed Insights 역시 이용자를
             식별하는 쿠키를 저장하지 않습니다.
           </p>
@@ -112,6 +140,11 @@ export default function PrivacyPage() {
               OpenAI, L.L.C. — 챗봇 답변 생성. 이용자가 입력한 질문과 답변에
               참고할 공지 본문이 전송됩니다.
             </li>
+            <li>
+              주식회사 카카오 — 카카오 로그인. 이용자가 카카오 로그인을 선택한
+              경우에만 카카오를 통해 본인 확인이 이루어지고, 서비스는 카카오
+              회원번호를 전달받습니다.
+            </li>
           </ul>
         </Section>
 
@@ -119,15 +152,22 @@ export default function PrivacyPage() {
           <p>
             서버 접속 로그와 챗봇 대화 기록은 서비스 개선과 오류 대응에 필요한
             기간 동안 보관한 뒤 파기합니다. 다만 검색 품질 연구에 활용하는 챗봇
-            대화 기록은 연구가 끝날 때까지 보관한 뒤 파기합니다. 관계 법령에서
+            대화 기록은 연구가 끝날 때까지 보관한 뒤 파기합니다. 카카오 회원번호와
+            북마크 등 로그인 이용자 정보는 회원 탈퇴 시 즉시 삭제합니다. 관계 법령에서
             별도의 보관 의무를 정한 경우에는 해당 기간을 따릅니다.
           </p>
         </Section>
 
         <Section title="6. 이용자의 권리">
           <p>
+            로그인한 이용자는 &ldquo;내 북마크&rdquo; 화면 아래의 &ldquo;회원
+            탈퇴&rdquo;로 언제든 탈퇴할 수 있으며, 탈퇴하면 카카오 회원번호와 북마크가
+            모두 삭제됩니다. 카카오 계정과 서비스의 연결은 카카오 계정 설정에서 직접
+            끊을 수 있습니다.
+          </p>
+          <p>
             이용자는 자신과 관련된 기록의 열람, 정정, 삭제를 요청할 수 있습니다.
-            서비스는 회원 식별 수단을 두고 있지 않으므로, 요청 시 확인 가능한
+            챗봇 대화 기록은 로그인과 연결되지 않으므로, 요청 시 확인 가능한
             범위(예: 세션 식별자, 요청 시각)를 함께 알려주시면 확인 후 처리해
             드립니다.
           </p>

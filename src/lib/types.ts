@@ -100,3 +100,35 @@ export type ChatStreamEvent =
       model: string;
     }
   | { type: "error"; error: string };
+
+// 카카오 로그인·북마크. 계약은 백엔드 docs/API_SPEC.md(User, AuthResult, Bookmark, BookmarkListResult).
+export interface User {
+  id: string; // 내부 사용자 ID. 카카오 회원번호가 아니다.
+  nickname?: string | null; // 카카오 동의항목을 받지 않아 지금은 항상 null
+}
+
+export interface AuthResult {
+  accessToken: string;
+  tokenType: "Bearer";
+  expiresIn: number; // 초
+  user: User;
+}
+
+export interface Bookmark {
+  noticeId: string;
+  bookmarkedAt: string; // UTC ISO 8601
+  notice: Notice | null; // 공지가 스냅샷에서 빠졌으면 null
+  saved: NoticeReference; // 북마크한 시점의 사본. 항상 있다
+}
+
+export interface BookmarkListResult {
+  items: Bookmark[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export interface BookmarkIdsResult {
+  noticeIds: string[];
+}
