@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
-import { ALL_TARGETS, TARGET_OPTIONS, getTargetLabel, safeHttpUrl } from "@/lib/notices";
+import { ALL_TARGETS, safeHttpUrl } from "@/lib/notices";
 import { useCurrentTarget } from "@/lib/target-store";
 import { ChatStreamEvent, NoticeReference } from "@/lib/types";
+
+import ChatTargetSelect from "./ChatTargetSelect";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -151,9 +153,8 @@ export default function ChatPanel({
   // 이 컴포넌트가 마운트된 동안(=한 대화)의 세션 식별자. 첫 질문 때 브라우저에서
   // 한 번 생성해 이후 모든 턴이 공유한다. 새로고침/재마운트 시 새 세션으로 갈린다.
   const sessionIdRef = useRef<string | null>(null);
-  // 공지 대상은 목록 필터와 함께 쓴다. 고르면 그 대상의 공지에서만 찾으므로 항상 칩으로 보여준다.
+  // 공지 대상은 목록 필터와 함께 쓴다. 고르면 그 대상의 공지에서만 찾으므로 입력란 위에 늘 보여준다.
   const [target, setTarget] = useCurrentTarget();
-  const [targetPickerOpen, setTargetPickerOpen] = useState(false);
 
   const isSheet = variant === "sheet";
 
@@ -427,52 +428,6 @@ export default function ChatPanel({
 
         <p className="mt-1 text-xs leading-5 text-slate-500">{ACCURACY_NOTICE}</p>
 
-        <div className="mt-2">
-          <button
-            type="button"
-            onClick={() => setTargetPickerOpen((open) => !open)}
-            aria-expanded={targetPickerOpen}
-            className={`max-w-full rounded-full px-3 py-1 text-xs font-medium transition ${
-              target === ALL_TARGETS
-                ? "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                : "bg-brand-50 text-brand-700 ring-1 ring-inset ring-brand-200 hover:bg-brand-100"
-            }`}
-          >
-            대상 · {target === ALL_TARGETS ? "전체" : getTargetLabel(target)} ·{" "}
-            {target === ALL_TARGETS ? "고르기" : "바꾸기"}
-          </button>
-          {targetPickerOpen ? (
-            <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-2">
-              <p className="mb-2 px-1 text-xs text-slate-500">
-                고르면 그 대상에게 해당하는 공지에서 찾아요. 공지 목록의 &lsquo;공지 대상&rsquo;도 같이
-                바뀌어요.
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {[{ value: ALL_TARGETS, label: "전체" }, ...TARGET_OPTIONS].map((option) => {
-                  const active = target === option.value;
-                  return (
-                    <button
-                      key={option.value}
-                      type="button"
-                      aria-pressed={active}
-                      onClick={() => {
-                        setTarget(option.value);
-                        setTargetPickerOpen(false);
-                      }}
-                      className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium transition ${
-                        active
-                          ? "bg-brand-600 text-white shadow-sm"
-                          : "bg-white text-slate-700 ring-1 ring-inset ring-slate-200 hover:bg-slate-50"
-                      }`}
-                    >
-                      {option.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ) : null}
-        </div>
       </div>
 
       <div
@@ -586,40 +541,43 @@ export default function ChatPanel({
 
       <form
         onSubmit={onSubmit}
-        className="flex min-w-0 shrink-0 items-center gap-2 border-t border-slate-200 bg-white p-3 md:p-4"
+        className="flex min-w-0 shrink-0 flex-col gap-2 border-t border-slate-200 bg-white p-3 md:p-4"
       >
-        <input
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-          onFocus={scrollToBottom}
-          placeholder="공지 관련 질문을 입력하세요"
-          maxLength={500}
-          autoComplete="off"
-          enterKeyHint="send"
-          aria-label="공지 관련 질문"
-          // 모바일은 16px 미만이면 iOS Safari가 포커스 시 확대되므로 text-base를 쓴다.
-          className="h-11 w-full min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2 text-base outline-none ring-brand-300 placeholder:text-slate-400 focus:border-brand-500 focus:ring sm:text-sm"
-        />
-        <button
-          type="submit"
-          disabled={!canSubmit}
-          aria-label={loading ? "답변 생성 중" : "질문 보내기"}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-slate-900 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:px-5"
-        >
-          <span className="hidden sm:inline">{loading ? "생성 중" : "질문"}</span>
-          <svg
-            aria-hidden
-            viewBox="0 0 20 20"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="h-5 w-5 sm:hidden"
+        <ChatTargetSelect target={target} onChange={setTarget} />
+        <div className="flex min-w-0 items-center gap-2">
+          <input
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            onFocus={scrollToBottom}
+            placeholder="공지 관련 질문을 입력하세요"
+            maxLength={500}
+            autoComplete="off"
+            enterKeyHint="send"
+            aria-label="공지 관련 질문"
+            // 모바일은 16px 미만이면 iOS Safari가 포커스 시 확대되므로 text-base를 쓴다.
+            className="h-11 w-full min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2 text-base outline-none ring-brand-300 placeholder:text-slate-400 focus:border-brand-500 focus:ring sm:text-sm"
+          />
+          <button
+            type="submit"
+            disabled={!canSubmit}
+            aria-label={loading ? "답변 생성 중" : "질문 보내기"}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-slate-900 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:px-5"
           >
-            <path d="M10 16V4M5 9l5-5 5 5" />
-          </svg>
-        </button>
+            <span className="hidden sm:inline">{loading ? "생성 중" : "질문"}</span>
+            <svg
+              aria-hidden
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-5 w-5 sm:hidden"
+            >
+              <path d="M10 16V4M5 9l5-5 5 5" />
+            </svg>
+          </button>
+        </div>
       </form>
     </section>
   );
