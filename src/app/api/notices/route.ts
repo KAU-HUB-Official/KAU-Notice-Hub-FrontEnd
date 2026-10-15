@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { normalizeTarget } from "@/lib/notices";
 import { noticeService } from "@/server/notices";
 import { BackendApiError } from "@/server/notices/backend-notice-service";
 
@@ -23,6 +24,7 @@ export async function GET(request: NextRequest) {
       audienceGroup: searchParams.get("audience") ?? undefined,
       sourceGroup: searchParams.get("group") ?? undefined,
       source: searchParams.get("source") ?? undefined,
+      target: normalizeTarget(searchParams.get("target")),
       page: parseNumber(searchParams.get("page"), 1),
       pageSize: parseNumber(searchParams.get("pageSize"), 20)
     });

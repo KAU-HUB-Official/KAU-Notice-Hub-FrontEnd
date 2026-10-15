@@ -4,6 +4,19 @@ export const ALL_SOURCES = "__ALL_SOURCES__";
 export const ALL_AUDIENCE_GROUPS = "__ALL_AUDIENCES__";
 export const ALL_SOURCE_GROUPS = "__ALL_SOURCE_GROUPS__";
 export const DEPARTMENT_AUDIENCE_GROUP = "학부 재학생(학과/전공별)";
+export const ALL_TARGETS = "__ALL_TARGETS__";
+// 선택한 신분을 다음 방문 때도 쓰려고 브라우저에만 기억한다. 서버에는 목록 조회 때 target으로만 간다.
+export const TARGET_STORAGE_KEY = "knh.target";
+
+// 백엔드 GET /api/notices의 target 값(공지 적용 대상 라벨 기준)과 화면 이름.
+// 라벨이 없는 공지는 어떤 신분을 골라도 보인다. 판정은 백엔드가 한다.
+export const TARGET_OPTIONS: ReadonlyArray<{ value: string; label: string }> = [
+  { value: "학부재학생", label: "학부 재학생" },
+  { value: "신입생·편입생", label: "신입생·편입생" },
+  { value: "일반대학원생", label: "일반대학원생" },
+  { value: "특수대학원생", label: "특수대학원생" },
+  { value: "교직원·기타", label: "교직원·기타" }
+];
 
 const EMPTY_TOKENS = new Set([
   "",
@@ -75,6 +88,15 @@ export function normalizeFilterValue(value: unknown): string | undefined {
   }
 
   return normalized;
+}
+
+export function normalizeTarget(value: unknown): string | undefined {
+  const normalized = normalizeFacetValue(value);
+  return TARGET_OPTIONS.some((option) => option.value === normalized) ? normalized : undefined;
+}
+
+export function getTargetLabel(value: string): string {
+  return TARGET_OPTIONS.find((option) => option.value === value)?.label ?? value;
 }
 
 export function getNoticeSourceNames(notice: Pick<Notice, "source" | "sources">): string[] {

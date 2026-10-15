@@ -3,7 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
-import { ALL_AUDIENCE_GROUPS, ALL_SOURCE_GROUPS, ALL_SOURCES, shouldUseSourceFilter } from "@/lib/notices";
+import {
+  ALL_AUDIENCE_GROUPS,
+  ALL_SOURCE_GROUPS,
+  ALL_SOURCES,
+  ALL_TARGETS,
+  TARGET_STORAGE_KEY,
+  getTargetLabel,
+  normalizeTarget,
+  shouldUseSourceFilter
+} from "@/lib/notices";
 import { NoticeListResult } from "@/lib/types";
 
 import AudienceNav from "./AudienceNav";
@@ -12,6 +21,7 @@ import NoticeListSkeleton from "./NoticeListSkeleton";
 import SearchBar from "./SearchBar";
 import SourceGroupFilter from "./SourceGroupFilter";
 import SourceNav from "./SourceNav";
+import TargetNav from "./TargetNav";
 
 const PAGE_SIZE = 15;
 const PAGE_WINDOW_SIZE = 1;
@@ -21,6 +31,28 @@ export interface NoticeExplorerFilters {
   audienceGroup: string;
   sourceGroup: string;
   source: string;
+  target: string;
+}
+
+// localStorage는 시크릿 창·차단 설정에서 예외를 던질 수 있어 항상 감싼다. 실패하면 기억하지 않을 뿐이다.
+function readStoredTarget(): string | undefined {
+  try {
+    return normalizeTarget(window.localStorage.getItem(TARGET_STORAGE_KEY));
+  } catch {
+    return undefined;
+  }
+}
+
+function storeTarget(target: string): void {
+  try {
+    if (target === ALL_TARGETS) {
+      window.localStorage.removeItem(TARGET_STORAGE_KEY);
+    } else {
+      window.localStorage.setItem(TARGET_STORAGE_KEY, target);
+    }
+  } catch {
+    // 기억하지 못해도 현재 화면의 필터는 그대로 동작한다.
+  }
 }
 
 interface NoticeExplorerProps {
@@ -47,6 +79,10 @@ function buildApiParams(filters: NoticeExplorerFilters, page: number): URLSearch
     params.set("source", filters.source);
   }
 
+  if (filters.target !== ALL_TARGETS) {
+    params.set("target", filters.target);
+  }
+
   params.set("page", String(page));
   params.set("pageSize", String(PAGE_SIZE));
 
@@ -70,6 +106,10 @@ function buildPageQuery(filters: NoticeExplorerFilters, page: number): URLSearch
 
   if (shouldUseSourceFilter(filters.audienceGroup) && filters.source !== ALL_SOURCES) {
     params.set("source", filters.source);
+  }
+
+  if (filters.target !== ALL_TARGETS) {
+    params.set("target", filters.target);
   }
 
   if (page > 1) {
@@ -150,6 +190,19 @@ export default function NoticeExplorer({ initialData, initialFilters }: NoticeEx
   const skipFetchOnMount = useRef(true);
   const skipSyncOnMount = useRef(true);
 
+  // 주소에 target이 없으면 지난번에 고른 신분을 다시 적용한다. 주소에 있으면(공유 링크) 주소가
+  // 우선이고, 기억한 값은 바꾸지 않는다. 기억은 사용자가 직접 고를 때만 한다.
+  useEffect(() => {
+    if (initialFilters.target !== ALL_TARGETS) {
+      return;
+    }
+    const stored = readStoredTarget();
+    if (stored) {
+      setPage(1);
+      setFilters((prev) => ({ ...prev, target: stored }));
+    }
+  }, [initialFilters.target]);
+
   useEffect(() => {
     if (skipFetchOnMount.current) {
       skipFetchOnMount.current = false;
@@ -218,6 +271,14 @@ export default function NoticeExplorer({ initialData, initialFilters }: NoticeEx
     }));
   }
 
+  function handleTargetSelect(nextTarget: string) {
+    const target =
+      nextTarget === ALL_TARGETS || filters.target === nextTarget ? ALL_TARGETS : nextTarget;
+    storeTarget(target);
+    setPage(1);
+    setFilters((prev) => ({ ...prev, target }));
+  }
+
   function handleAudienceSelect(nextAudience: string) {
     setPage(1);
     setFilters((prev) => ({
@@ -251,11 +312,13 @@ export default function NoticeExplorer({ initialData, initialFilters }: NoticeEx
   function handleReset() {
     setSearchInput("");
     setPage(1);
+    storeTarget(ALL_TARGETS);
     setFilters({
       q: "",
       audienceGroup: ALL_AUDIENCE_GROUPS,
       sourceGroup: ALL_SOURCE_GROUPS,
-      source: ALL_SOURCES
+      source: ALL_SOURCES,
+      target: ALL_TARGETS
     });
   }
 
@@ -270,11 +333,13 @@ export default function NoticeExplorer({ initialData, initialFilters }: NoticeEx
 
   const hasActiveFilters =
     filters.q.length > 0 ||
+    filters.target !== ALL_TARGETS ||
     filters.audienceGroup !== ALL_AUDIENCE_GROUPS ||
     filters.sourceGroup !== ALL_SOURCE_GROUPS ||
     (shouldUseSourceFilter(filters.audienceGroup) && filters.source !== ALL_SOURCES);
   const showSourceFilter = shouldUseSourceFilter(filters.audienceGroup);
   const showSourceGroupFilter = data.facets.sourceGroups.length > 0;
+  const targetActive = filters.target !== ALL_TARGETS;
   const audienceActive = filters.audienceGroup !== ALL_AUDIENCE_GROUPS;
   const sourceGroupActive = filters.sourceGroup !== ALL_SOURCE_GROUPS;
   const sourceActive = showSourceFilter && filters.source !== ALL_SOURCES;
@@ -289,7 +354,7 @@ export default function NoticeExplorer({ initialData, initialFilters }: NoticeEx
           <div className="min-w-0">
             <h2 className="text-xl font-semibold text-slate-950">공지 탐색</h2>
             <p className="mt-1 text-sm text-slate-600">
-              대상자와 중분류, 필요한 경우 세부 홈페이지로 범위를 좁혀보세요.
+              내 신분과 게시판, 필요한 경우 세부 홈페이지로 범위를 좁혀보세요.
             </p>
           </div>
           <div className="shrink-0 text-sm text-slate-600">
@@ -313,6 +378,10 @@ export default function NoticeExplorer({ initialData, initialFilters }: NoticeEx
             isLoading={isLoading}
             placeholder="예: 장학금, 수강신청, 졸업요건"
           />
+        </div>
+
+        <div className="mt-4 min-w-0">
+          <TargetNav selectedTarget={filters.target} onSelect={handleTargetSelect} />
         </div>
 
         <div className="mt-4 min-w-0">
@@ -348,8 +417,11 @@ export default function NoticeExplorer({ initialData, initialFilters }: NoticeEx
         <div className="mt-4 flex min-w-0 flex-col gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 flex-wrap items-center gap-2 text-xs text-slate-600">
             <span className="font-semibold text-slate-500">적용된 필터</span>
+            <span className={appliedFilterChipClass(targetActive)}>
+              내 신분 · {targetActive ? getTargetLabel(filters.target) : "전체"}
+            </span>
             <span className={appliedFilterChipClass(audienceActive)}>
-              대상 ·{" "}
+              게시판 ·{" "}
               {filters.audienceGroup === ALL_AUDIENCE_GROUPS
                 ? "전체"
                 : filters.audienceGroup}
