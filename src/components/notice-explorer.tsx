@@ -8,11 +8,10 @@ import {
   ALL_SOURCE_GROUPS,
   ALL_SOURCES,
   ALL_TARGETS,
-  TARGET_STORAGE_KEY,
   getTargetLabel,
-  normalizeTarget,
   shouldUseSourceFilter
 } from "@/lib/notices";
+import { getCurrentTarget, setCurrentTarget, subscribeTarget } from "@/lib/target-store";
 import { NoticeListResult } from "@/lib/types";
 
 import AudienceNav from "./AudienceNav";
@@ -32,27 +31,6 @@ export interface NoticeExplorerFilters {
   sourceGroup: string;
   source: string;
   target: string;
-}
-
-// localStorage는 시크릿 창·차단 설정에서 예외를 던질 수 있어 항상 감싼다. 실패하면 기억하지 않을 뿐이다.
-function readStoredTarget(): string | undefined {
-  try {
-    return normalizeTarget(window.localStorage.getItem(TARGET_STORAGE_KEY));
-  } catch {
-    return undefined;
-  }
-}
-
-function storeTarget(target: string): void {
-  try {
-    if (target === ALL_TARGETS) {
-      window.localStorage.removeItem(TARGET_STORAGE_KEY);
-    } else {
-      window.localStorage.setItem(TARGET_STORAGE_KEY, target);
-    }
-  } catch {
-    // 기억하지 못해도 현재 화면의 필터는 그대로 동작한다.
-  }
 }
 
 interface NoticeExplorerProps {
@@ -190,17 +168,23 @@ export default function NoticeExplorer({ initialData, initialFilters }: NoticeEx
   const skipFetchOnMount = useRef(true);
   const skipSyncOnMount = useRef(true);
 
-  // 주소에 target이 없으면 지난번에 고른 신분을 다시 적용한다. 주소에 있으면(공유 링크) 주소가
-  // 우선이고, 기억한 값은 바꾸지 않는다. 기억은 사용자가 직접 고를 때만 한다.
+  // 공지 대상은 챗봇과 함께 쓴다(lib/target-store). 주소에 target이 있으면(공유 링크) 화면에만
+  // 적용하고 기억한 값은 바꾸지 않는다. 없으면 지난번에 고른 값을 다시 적용한다.
   useEffect(() => {
     if (initialFilters.target !== ALL_TARGETS) {
-      return;
+      setCurrentTarget(initialFilters.target, { persist: false });
+    } else {
+      const stored = getCurrentTarget();
+      if (stored !== ALL_TARGETS) {
+        setPage(1);
+        setFilters((prev) => ({ ...prev, target: stored }));
+      }
     }
-    const stored = readStoredTarget();
-    if (stored) {
+    // 챗봇에서 대상을 바꾸면 목록도 따라간다.
+    return subscribeTarget((target) => {
       setPage(1);
-      setFilters((prev) => ({ ...prev, target: stored }));
-    }
+      setFilters((prev) => (prev.target === target ? prev : { ...prev, target }));
+    });
   }, [initialFilters.target]);
 
   useEffect(() => {
@@ -274,7 +258,7 @@ export default function NoticeExplorer({ initialData, initialFilters }: NoticeEx
   function handleTargetSelect(nextTarget: string) {
     const target =
       nextTarget === ALL_TARGETS || filters.target === nextTarget ? ALL_TARGETS : nextTarget;
-    storeTarget(target);
+    setCurrentTarget(target);
     setPage(1);
     setFilters((prev) => ({ ...prev, target }));
   }
@@ -312,7 +296,7 @@ export default function NoticeExplorer({ initialData, initialFilters }: NoticeEx
   function handleReset() {
     setSearchInput("");
     setPage(1);
-    storeTarget(ALL_TARGETS);
+    setCurrentTarget(ALL_TARGETS);
     setFilters({
       q: "",
       audienceGroup: ALL_AUDIENCE_GROUPS,

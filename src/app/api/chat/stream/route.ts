@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { normalizeTarget } from "@/lib/notices";
 import { ChatRequestBody } from "@/lib/types";
 import { BackendApiError } from "@/server/notices/backend-notice-service";
 import { noticeService } from "@/server/notices";
@@ -34,6 +35,7 @@ export async function POST(request: Request) {
         source: body.source,
         category: body.category,
         department: body.department,
+        userGroup: normalizeTarget(body.userGroup),
         sessionId: body.sessionId
       },
       request.signal

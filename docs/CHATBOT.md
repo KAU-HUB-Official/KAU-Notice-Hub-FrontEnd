@@ -7,7 +7,7 @@
 ## 요청 흐름
 
 1. 사용자가 `ChatPanel`에 질문을 입력한다.
-2. 질문과 직전 대화(`history`)만 요청에 담는다. 목록 필터(URL의 `audience`, `group`, `source`)는 넣지 않는다.
+2. 질문, 직전 대화(`history`), 고른 공지 대상(`userGroup`)을 요청에 담는다. 목록의 게시판 필터(URL의 `audience`, `group`, `source`)는 넣지 않는다.
 3. `/api/chat/stream` route handler가 백엔드 `/api/chat/stream`으로 전달한다.
 4. 백엔드가 보내는 SSE 이벤트를 순서대로 처리해 검색 상태, 근거 공지, 최종 답변을 점진적으로 화면에 반영한다.
 
@@ -24,13 +24,20 @@ interface ChatRequestBody {
   source?: string;
   category?: string;
   department?: string;
+  userGroup?: string;
   sessionId?: string;
 }
 ```
 
 `question`은 필수이며 route handler에서 빈 문자열과 500자 초과 입력을 거부한다.
 
-`audienceGroup`·`sourceGroup`·`source`·`category`·`department`는 API가 받기는 하지만 `ChatPanel`은 보내지 않는다.
+`audienceGroup`·`sourceGroup`·`source`·`category`·`department`는 API가 받기는 하지만 `ChatPanel`은 보내지 않는다. 사용자가 켜 둔 걸 잊은 목록 필터가 챗봇 검색을 몰래 좁혀 공지를 못 찾는 일이 있었기 때문이다.
+
+`userGroup`은 공지 목록의 '공지 대상'과 같은 값이다(`학부재학생`, `신입생·편입생`, `일반대학원생`, `특수대학원생`, `교직원·기타`). 백엔드는 이 값으로 챗봇이 찾는 공지 후보를 거르고, 대상 라벨이 없는 공지는 거르지 않는다. 답변 프롬프트에는 넣지 않는다.
+- 목록과 챗봇이 같은 선택을 쓴다(`src/lib/target-store.ts`). 어느 쪽에서 바꿔도 다른 쪽이 따라간다. 사용자가 직접 고른 값은 `localStorage`(`knh.target`)에 기억하고, 공유 링크의 `?target=`은 화면에만 적용한다.
+- 몰래 좁히지 않도록 `ChatPanel` 머리에 "대상 · 일반대학원생 · 바꾸기" 칩을 항상 보여준다. 누르면 대상을 고를 수 있다. "전체"면 보내지 않는다.
+- 대화 중에 바꾸면 다음 질문부터 새 값을 보낸다.
+- route handler는 정의된 5개 값만 백엔드로 넘긴다.
 
 `sessionId`는 한 대화 흐름을 묶는 식별자다. `ChatPanel`이 마운트될 때(=새 대화) 브라우저에서
 한 번 생성해 이후 모든 턴이 같은 값을 보낸다. 백엔드 세션 로깅이 켜져 있을 때만 사용되며,
