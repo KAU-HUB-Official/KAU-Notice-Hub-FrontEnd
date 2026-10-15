@@ -89,6 +89,8 @@ export interface ChatRequestBody {
   source?: string;
   category?: string;
   department?: string;
+  // 사용자가 고른 공지 대상(목록 target과 같은 값). 백엔드가 검색 후보를 그 대상으로 거른다.
+  userGroup?: string;
   // 한 대화 흐름을 묶는 식별자. 백엔드가 켜져 있을 때만 세션 로깅에 사용한다.
   sessionId?: string;
 }

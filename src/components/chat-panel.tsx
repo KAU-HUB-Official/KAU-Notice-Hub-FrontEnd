@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
-import { safeHttpUrl } from "@/lib/notices";
+import { ALL_TARGETS, TARGET_OPTIONS, getTargetLabel, safeHttpUrl } from "@/lib/notices";
+import { useCurrentTarget } from "@/lib/target-store";
 import { ChatStreamEvent, NoticeReference } from "@/lib/types";
 
 interface ChatMessage {
@@ -150,6 +151,9 @@ export default function ChatPanel({
   // 이 컴포넌트가 마운트된 동안(=한 대화)의 세션 식별자. 첫 질문 때 브라우저에서
   // 한 번 생성해 이후 모든 턴이 공유한다. 새로고침/재마운트 시 새 세션으로 갈린다.
   const sessionIdRef = useRef<string | null>(null);
+  // 공지 대상은 목록 필터와 함께 쓴다. 고르면 그 대상의 공지에서만 찾으므로 항상 칩으로 보여준다.
+  const [target, setTarget] = useCurrentTarget();
+  const [targetPickerOpen, setTargetPickerOpen] = useState(false);
 
   const isSheet = variant === "sheet";
 
@@ -281,6 +285,7 @@ export default function ChatPanel({
           question,
           history,
           sessionId: sessionIdRef.current,
+          userGroup: target === ALL_TARGETS ? undefined : target,
         }),
       });
 
@@ -421,6 +426,53 @@ export default function ChatPanel({
         </div>
 
         <p className="mt-1 text-xs leading-5 text-slate-500">{ACCURACY_NOTICE}</p>
+
+        <div className="mt-2">
+          <button
+            type="button"
+            onClick={() => setTargetPickerOpen((open) => !open)}
+            aria-expanded={targetPickerOpen}
+            className={`max-w-full rounded-full px-3 py-1 text-xs font-medium transition ${
+              target === ALL_TARGETS
+                ? "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                : "bg-brand-50 text-brand-700 ring-1 ring-inset ring-brand-200 hover:bg-brand-100"
+            }`}
+          >
+            대상 · {target === ALL_TARGETS ? "전체" : getTargetLabel(target)} ·{" "}
+            {target === ALL_TARGETS ? "고르기" : "바꾸기"}
+          </button>
+          {targetPickerOpen ? (
+            <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-2">
+              <p className="mb-2 px-1 text-xs text-slate-500">
+                고르면 그 대상에게 해당하는 공지에서 찾아요. 공지 목록의 &lsquo;공지 대상&rsquo;도 같이
+                바뀌어요.
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {[{ value: ALL_TARGETS, label: "전체" }, ...TARGET_OPTIONS].map((option) => {
+                  const active = target === option.value;
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() => {
+                        setTarget(option.value);
+                        setTargetPickerOpen(false);
+                      }}
+                      className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium transition ${
+                        active
+                          ? "bg-brand-600 text-white shadow-sm"
+                          : "bg-white text-slate-700 ring-1 ring-inset ring-slate-200 hover:bg-slate-50"
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
+        </div>
       </div>
 
       <div
