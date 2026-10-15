@@ -6,13 +6,13 @@
 
 탐색 순서:
 
-1. 내 신분 `target`
+1. 공지 대상 `target`
 2. 게시판(대상자) `audience`
 3. 중분류 `group`
 4. 세부 홈페이지 `source`
 5. 검색어 `q`
 
-## 내 신분 `target`
+## 공지 대상 `target`
 
 공지 본문의 적용 대상 라벨로 거른다. 게시판 기준 분류인 `audience`와 별개이고, 둘을 함께 걸 수 있다. 판정은 백엔드가 한다(백엔드 `docs/API_SPEC.md`의 "적용 대상 라벨").
 
@@ -39,7 +39,7 @@
 
 ## UI 동작
 
-- 대상자(게시판)를 바꾸면 `group`과 `source`를 초기화한다. 내 신분은 유지한다.
+- 대상자(게시판)를 바꾸면 `group`과 `source`를 초기화한다. 공지 대상은 유지한다.
 - 중분류를 바꾸면 `source`를 초기화한다.
 - 같은 중분류 또는 홈페이지를 다시 선택하면 전체 상태로 되돌린다.
 - 필터나 검색어가 바뀌면 `page`는 1로 초기화한다.
@@ -65,7 +65,7 @@ pageSize
 
 | 역할 | 파일 |
 | --- | --- |
-| 내 신분 칩 | `src/components/TargetNav.tsx` |
+| 공지 대상 칩 | `src/components/TargetNav.tsx` |
 | 게시판(대상자) 탭 | `src/components/AudienceNav.tsx` |
 | 중분류 탭 | `src/components/SourceGroupFilter.tsx` |
 | 세부 홈페이지 탭 | `src/components/SourceNav.tsx` |

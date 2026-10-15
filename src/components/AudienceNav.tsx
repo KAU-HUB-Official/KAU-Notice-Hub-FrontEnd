@@ -53,19 +53,17 @@ export default function AudienceNav({
   ];
 
   return (
-    <nav aria-label="게시판 필터" className="w-full min-w-0">
-      <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start">
-        <span className="shrink-0 pt-2.5 text-xs font-semibold text-slate-500 sm:w-14">게시판</span>
-        <div className="flex min-w-0 flex-1 flex-wrap gap-2 rounded-lg border border-slate-200 bg-slate-50 p-2">
-          {items.map((item) => (
-            <AudienceTab
-              key={item.value}
-              item={item}
-              active={selectedAudience === item.value}
-              onClick={() => onSelect(item.value)}
-            />
-          ))}
-        </div>
+    <nav aria-label="게시판 필터" className="w-full min-w-0 rounded-lg border border-slate-200 bg-slate-50 p-2">
+      <div className="mb-2 px-1 text-xs font-semibold text-slate-500">게시판</div>
+      <div className="flex min-w-0 flex-wrap gap-2">
+        {items.map((item) => (
+          <AudienceTab
+            key={item.value}
+            item={item}
+            active={selectedAudience === item.value}
+            onClick={() => onSelect(item.value)}
+          />
+        ))}
       </div>
     </nav>
   );

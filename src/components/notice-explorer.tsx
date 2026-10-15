@@ -354,7 +354,7 @@ export default function NoticeExplorer({ initialData, initialFilters }: NoticeEx
           <div className="min-w-0">
             <h2 className="text-xl font-semibold text-slate-950">공지 탐색</h2>
             <p className="mt-1 text-sm text-slate-600">
-              내 신분과 게시판, 필요한 경우 세부 홈페이지로 범위를 좁혀보세요.
+              공지 대상과 게시판, 필요한 경우 세부 홈페이지로 범위를 좁혀보세요.
             </p>
           </div>
           <div className="shrink-0 text-sm text-slate-600">
@@ -418,7 +418,7 @@ export default function NoticeExplorer({ initialData, initialFilters }: NoticeEx
           <div className="flex min-w-0 flex-wrap items-center gap-2 text-xs text-slate-600">
             <span className="font-semibold text-slate-500">적용된 필터</span>
             <span className={appliedFilterChipClass(targetActive)}>
-              내 신분 · {targetActive ? getTargetLabel(filters.target) : "전체"}
+              대상 · {targetActive ? getTargetLabel(filters.target) : "전체"}
             </span>
             <span className={appliedFilterChipClass(audienceActive)}>
               게시판 ·{" "}
