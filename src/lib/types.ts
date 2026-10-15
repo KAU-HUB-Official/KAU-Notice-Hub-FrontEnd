@@ -19,6 +19,9 @@ export interface Notice {
   date?: string;
   tags: string[];
   attachments: NoticeAttachment[];
+  // 적용 대상 라벨. null/없음은 라벨 없음, 빈 배열은 모든 학생. audienceGroup(게시판 기준)과 별개다.
+  targetAudiences?: string[] | null;
+  targetExcludes?: string[];
 }
 
 export interface NoticeQuery {
@@ -26,6 +29,7 @@ export interface NoticeQuery {
   audienceGroup?: string;
   sourceGroup?: string;
   source?: string;
+  target?: string;
   page?: number;
   pageSize?: number;
 }

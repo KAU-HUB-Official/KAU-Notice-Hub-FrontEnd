@@ -32,8 +32,12 @@ interface Notice {
     name: string;
     url: string;
   }>;
+  targetAudiences?: string[] | null; // 적용 대상 라벨. null은 라벨 없음, []는 모든 학생
+  targetExcludes?: string[];
 }
 ```
+
+`targetAudiences`와 `targetExcludes`는 공지 본문의 적용 대상 라벨이다. 프론트는 지금 이 값을 화면에 그리지 않고, 목록을 거를 때는 `target` query parameter를 보낸다.
 
 `source`는 대표 홈페이지, `sources`는 여러 홈페이지에 동시에 걸린 공지를 표시할 때 사용한다.
 

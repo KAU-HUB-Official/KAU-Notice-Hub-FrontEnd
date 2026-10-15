@@ -45,7 +45,7 @@ export default function AudienceNav({
   onSelect
 }: AudienceNavProps) {
   const items: AudienceItem[] = [
-    { value: ALL_AUDIENCE_GROUPS, label: "전체 대상" },
+    { value: ALL_AUDIENCE_GROUPS, label: "전체" },
     ...audienceGroups.map((audienceGroup) => ({
       value: audienceGroup,
       label: audienceGroup
@@ -53,7 +53,8 @@ export default function AudienceNav({
   ];
 
   return (
-    <nav aria-label="대상자 필터" className="w-full min-w-0 rounded-lg border border-slate-200 bg-slate-50 p-2">
+    <nav aria-label="게시판 필터" className="w-full min-w-0 rounded-lg border border-slate-200 bg-slate-50 p-2">
+      <div className="mb-2 px-1 text-xs font-semibold text-slate-500">게시판</div>
       <div className="flex min-w-0 flex-wrap gap-2">
         {items.map((item) => (
           <AudienceTab

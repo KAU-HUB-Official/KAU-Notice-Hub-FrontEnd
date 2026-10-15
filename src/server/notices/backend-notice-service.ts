@@ -85,6 +85,7 @@ function buildNoticeQueryParams(query: NoticeQuery): URLSearchParams {
   appendStringParam(params, "audience", query.audienceGroup);
   appendStringParam(params, "group", query.sourceGroup);
   appendStringParam(params, "source", query.source);
+  appendStringParam(params, "target", query.target);
   appendNumberParam(params, "page", query.page);
   appendNumberParam(params, "pageSize", query.pageSize);
 

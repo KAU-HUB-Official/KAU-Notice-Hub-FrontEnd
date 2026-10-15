@@ -8,7 +8,9 @@ import {
   ALL_AUDIENCE_GROUPS,
   ALL_SOURCE_GROUPS,
   ALL_SOURCES,
+  ALL_TARGETS,
   normalizeFilterValue,
+  normalizeTarget,
   shouldUseSourceFilter,
 } from "@/lib/notices";
 import { siteConfig } from "@/lib/site";
@@ -66,6 +68,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const rawSourceGroup = firstQueryValue(searchParams?.group);
   const rawSource = firstQueryValue(searchParams?.source);
   const rawQuery = firstQueryValue(searchParams?.q)?.trim() ?? "";
+  const target = normalizeTarget(firstQueryValue(searchParams?.target));
   const page = parsePage(firstQueryValue(searchParams?.page));
 
   const initialNormalizedAudience = normalizeFilterValue(rawAudience);
@@ -81,6 +84,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     audienceGroup,
     sourceGroup,
     source,
+    target,
     page,
     pageSize: 15,
   });
@@ -109,6 +113,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       audienceGroup,
       sourceGroup,
       source,
+      target,
       page: 1,
       pageSize: 15,
     });
@@ -119,6 +124,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     audienceGroup: audienceGroup ?? ALL_AUDIENCE_GROUPS,
     sourceGroup: sourceGroup ?? ALL_SOURCE_GROUPS,
     source: source ?? ALL_SOURCES,
+    target: target ?? ALL_TARGETS,
   };
 
   return (
