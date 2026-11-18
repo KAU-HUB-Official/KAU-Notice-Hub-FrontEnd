@@ -6,10 +6,10 @@ KAU Notice Hub 백엔드 API를 화면에서 탐색하고, 공지 기반 챗봇�
 
 ## 기능
 
-- 대상자, 중분류, 세부 홈페이지 필터 기반 공지 탐색
+- 공지 대상(학부재학생, 신입생·편입생 등), 대상자(게시판), 중분류, 세부 홈페이지 필터 기반 공지 탐색
 - 검색어와 필터 상태의 URL 동기화
 - 공지 상세, 원문 링크, 첨부파일 표시, Markdown 본문 렌더링
-- 현재 필터 범위를 반영한 공지 챗봇 (SSE 스트리밍 응답)
+- 공지 챗봇 (SSE 스트리밍 응답). 입력란 위 드롭다운에서 고른 공지 대상을 `userGroup`으로 보내 그 대상 공지에서 찾음. 목록의 게시판 필터는 챗봇에 넘기지 않음
 - 데스크톱은 사이드바 챗봇, 모바일은 우하단 버튼으로 여는 전체화면 챗봇 시트
 - SEO 메타데이터, Open Graph 이미지, `sitemap.xml`, `robots.txt`
 - 카카오 로그인, 공지 북마크(목록·상세의 북마크 버튼, `/bookmarks` 내 북마크), 회원 탈퇴
@@ -152,6 +152,7 @@ src/lib/site.ts         사이트 메타데이터, 메타 설명 생성 유틸
 src/server/notices      백엔드 API 클라이언트
 src/server/auth         로그인 쿠키, 카카오 Redirect URI, 로그인 필요 route 공통 처리
 src/lib/bookmark-store.ts 로그인 상태와 북마크 ID 공유 (useSyncExternalStore)
+src/lib/target-store.ts 공지 목록과 챗봇이 함께 쓰는 '공지 대상' 선택 (localStorage 기억)
 docs                    운영에 필요한 보조 문서
 ```
 
