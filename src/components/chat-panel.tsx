@@ -8,6 +8,7 @@ import { useCurrentTarget } from "@/lib/target-store";
 import { ChatStreamEvent, NoticeReference } from "@/lib/types";
 
 import ChatTargetSelect from "./ChatTargetSelect";
+import { InlineBold } from "./InlineBold";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -469,7 +470,14 @@ export default function ChatPanel({
                   </p>
                 ) : (
                   <p className="break-words whitespace-pre-wrap leading-relaxed">
-                    {displayContent}
+                    {message.role === "assistant" ? (
+                      <InlineBold
+                        text={displayContent}
+                        streaming={Boolean(message.typing)}
+                      />
+                    ) : (
+                      displayContent
+                    )}
                     {message.typing ? (
                       <span
                         aria-hidden
