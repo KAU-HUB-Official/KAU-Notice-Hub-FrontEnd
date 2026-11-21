@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { loginHref } from "@/lib/bookmark-store";
+
 // 회원 탈퇴: 백엔드가 사용자와 북마크를 모두 지우고, BFF가 로그인 쿠키를 지운다.
 export default function WithdrawButton() {
   const [pending, setPending] = useState(false);
@@ -20,9 +22,16 @@ export default function WithdrawButton() {
     setPending(true);
     try {
       const response = await fetch("/api/me", { method: "DELETE" });
-      if (response.ok || response.status === 401) {
+      if (response.ok) {
         window.alert("탈퇴했습니다. 카카오 계정의 앱 연결은 카카오 계정 설정에서 끊을 수 있습니다.");
         window.location.href = "/";
+        return;
+      }
+      // 401은 로그인이 만료됐거나(계정은 남아 있음) 이미 탈퇴한 경우다. 둘을 구분할 수 없으므로
+      // 탈퇴했다고 알리지 않고, 다시 로그인한 뒤 탈퇴하게 한다.
+      if (response.status === 401) {
+        window.alert("로그인이 만료되어 탈퇴를 처리하지 못했습니다. 다시 로그인한 뒤 탈퇴해 주세요.");
+        window.location.href = loginHref();
         return;
       }
       const payload = (await response.json().catch(() => null)) as { error?: string } | null;
