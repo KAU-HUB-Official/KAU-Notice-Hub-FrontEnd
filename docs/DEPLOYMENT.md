@@ -59,6 +59,8 @@ KAKAO_REDIRECT_URI=https://kau-notice-hub.app/auth/kakao/callback
 
 서버에서만 다른 백엔드 주소를 써야 하면 `NOTICE_API_BASE_URL`을 추가한다. 우선순위는 `NOTICE_API_BASE_URL`, `NEXT_PUBLIC_API_BASE_URL`, `http://localhost:8000` 순서다.
 
+`NOTICE_API_INTERNAL_TOKEN`(서버 전용)은 백엔드 `INTERNAL_PROXY_TOKEN`과 같은 값이다. 설정하면 BFF가 백엔드 요청에 실제 브라우저 IP(`X-Client-IP`)와 토큰(`X-Internal-Token`)을 함께 보낸다. 비워 두면 백엔드에는 모든 요청이 Vercel IP 하나로 보여 IP별 요청 제한이 사실상 전체 제한이 된다.
+
 `NEXT_PUBLIC_SITE_URL`은 SEO 메타데이터(canonical URL, Open Graph, `sitemap.xml`, `robots.txt`)의 기준 origin이다. 미설정 시 기본값 `https://kau-notice-hub.app`을 사용한다.
 
 ## 도메인
@@ -99,6 +101,7 @@ DELETE /api/bookmarks/{noticeId}
 목록 화면에서 유지하는 query parameter:
 
 ```text
+target
 audience
 group
 source
@@ -113,7 +116,7 @@ pageSize
 2. Vercel에 `NEXT_PUBLIC_API_BASE_URL`을 설정한다.
 3. 새 deployment를 만든다.
 4. production URL에서 메인 화면, 상세 화면, 챗봇을 확인한다.
-5. 필터 변경 시 URL의 `audience`, `group`, `source`, `q`, `page`가 기대대로 바뀌는지 확인한다.
+5. 필터 변경 시 URL의 `target`, `audience`, `group`, `source`, `q`, `page`가 기대대로 바뀌는지 확인한다.
 
 ## 문제 확인
 
