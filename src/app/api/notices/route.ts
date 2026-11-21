@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { normalizeTarget } from "@/lib/notices";
 import { noticeService } from "@/server/notices";
-import { BackendApiError } from "@/server/notices/backend-notice-service";
+import { backendErrorResponse } from "@/server/notices/error-response";
 
 export const dynamic = "force-dynamic";
 
@@ -31,18 +31,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error("GET /api/notices failed:", error);
-
-    if (error instanceof BackendApiError) {
-      return NextResponse.json(
-        { error: error.message, detail: error.detail },
-        { status: error.status }
-      );
-    }
-
-    return NextResponse.json(
-      { error: "공지 목록을 불러오지 못했습니다." },
-      { status: 500 }
-    );
+    return backendErrorResponse("GET /api/notices", error, "공지 목록을 불러오지 못했습니다.");
   }
 }

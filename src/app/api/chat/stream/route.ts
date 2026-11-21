@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { normalizeTarget } from "@/lib/notices";
 import { ChatRequestBody } from "@/lib/types";
-import { BackendApiError } from "@/server/notices/backend-notice-service";
+import { backendErrorResponse } from "@/server/notices/error-response";
 import { noticeService } from "@/server/notices";
 
 export const dynamic = "force-dynamic";
@@ -51,18 +51,6 @@ export async function POST(request: Request) {
       }
     });
   } catch (error) {
-    console.error("POST /api/chat/stream failed:", error);
-
-    if (error instanceof BackendApiError) {
-      return NextResponse.json(
-        { error: error.message, detail: error.detail },
-        { status: error.status }
-      );
-    }
-
-    return NextResponse.json(
-      { error: "챗봇 응답을 생성하지 못했습니다." },
-      { status: 500 }
-    );
+    return backendErrorResponse("POST /api/chat/stream", error, "챗봇 응답을 생성하지 못했습니다.");
   }
 }
