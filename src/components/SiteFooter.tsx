@@ -1,22 +1,9 @@
 import Link from "next/link";
 
-const DEFAULT_GITHUB_URL = "https://github.com/KAU-HUB-Official";
-const DEFAULT_CONTACT_EMAIL = "qktjwl123@gmail.com";
-
-function envValue(value: string | undefined, fallback: string): string {
-  const trimmed = value?.trim();
-  return trimmed || fallback;
-}
+import { siteConfig } from "@/lib/site";
 
 export default function SiteFooter() {
-  const githubUrl = envValue(
-    process.env.NEXT_PUBLIC_GITHUB_URL,
-    DEFAULT_GITHUB_URL,
-  );
-  const contactEmail = envValue(
-    process.env.NEXT_PUBLIC_CONTACT_EMAIL,
-    DEFAULT_CONTACT_EMAIL,
-  );
+  const { githubUrl, contactEmail } = siteConfig;
 
   return (
     <footer id="contact" className="mt-6 border-t border-slate-800 bg-slate-950">

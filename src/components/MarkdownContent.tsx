@@ -5,7 +5,6 @@ import remarkGfm from "remark-gfm";
 
 interface MarkdownContentProps {
   content: string;
-  className?: string;
 }
 
 /**
@@ -18,7 +17,7 @@ interface MarkdownContentProps {
  * - 기본 HTML은 react-markdown 기본값으로 차단 (raw HTML 무시)
  * - 빈 본문은 안내 문구로 대체
  */
-export function MarkdownContent({ content, className }: MarkdownContentProps) {
+export function MarkdownContent({ content }: MarkdownContentProps) {
   const trimmed = content?.trim();
   if (!trimmed) {
     return (
@@ -37,7 +36,7 @@ export function MarkdownContent({ content, className }: MarkdownContentProps) {
     "prose-pre:bg-slate-900 prose-pre:text-slate-50";
 
   return (
-    <div className={className ? `${proseClass} ${className}` : proseClass}>
+    <div className={proseClass}>
       <Markdown
         remarkPlugins={[remarkGfm, remarkBreaks]}
         components={{

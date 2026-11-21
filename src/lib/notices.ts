@@ -3,7 +3,7 @@ import { Notice } from "@/lib/types";
 export const ALL_SOURCES = "__ALL_SOURCES__";
 export const ALL_AUDIENCE_GROUPS = "__ALL_AUDIENCES__";
 export const ALL_SOURCE_GROUPS = "__ALL_SOURCE_GROUPS__";
-export const DEPARTMENT_AUDIENCE_GROUP = "학부 재학생(학과/전공별)";
+const DEPARTMENT_AUDIENCE_GROUP = "학부 재학생(학과/전공별)";
 export const ALL_TARGETS = "__ALL_TARGETS__";
 // 고른 공지 대상을 다음 방문 때도 쓰려고 브라우저에만 기억한다(lib/target-store). 서버에는 목록 조회의
 // target과 챗봇 요청의 userGroup으로만 간다.

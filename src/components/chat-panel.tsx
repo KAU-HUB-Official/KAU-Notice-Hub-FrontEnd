@@ -10,7 +10,8 @@ import { ChatStreamEvent, NoticeReference } from "@/lib/types";
 import ChatTargetSelect from "./ChatTargetSelect";
 import { InlineBold } from "./InlineBold";
 
-interface ChatMessage {
+// 화면에 그리는 대화 한 줄. 백엔드로 보내는 history 항목(types.ts의 ChatMessage)과 다르다.
+interface PanelMessage {
   role: "user" | "assistant";
   content: string;
   references?: NoticeReference[];
@@ -20,7 +21,7 @@ interface ChatMessage {
 
 // embedded: 데스크톱 사이드바에 그대로 박히는 카드형. 자체 높이를 가진다.
 // sheet: 모바일 전체화면 시트 내부. 높이는 부모(ChatLauncher)가 정한다.
-export type ChatPanelVariant = "embedded" | "sheet";
+type ChatPanelVariant = "embedded" | "sheet";
 
 interface ChatPanelProps {
   variant?: ChatPanelVariant;
@@ -58,7 +59,7 @@ function TypingDots() {
   );
 }
 
-const INITIAL_MESSAGE: ChatMessage = {
+const INITIAL_MESSAGE: PanelMessage = {
   role: "assistant",
   content:
     "공지 내용을 바탕으로 질문에 답변해드려요.\n" +
@@ -76,7 +77,7 @@ const SUGGESTED_QUESTIONS = [
   "기숙사 모집 언제 시작해요?",
 ];
 
-const STATUS_PLACEHOLDER: Record<NonNullable<ChatMessage["status"]>, string> = {
+const STATUS_PLACEHOLDER: Record<NonNullable<PanelMessage["status"]>, string> = {
   searching: "관련 공지를 검색하고 있어요",
   answering: "답변을 작성하고 있어요",
   done: "",
@@ -147,7 +148,7 @@ export default function ChatPanel({
 }: ChatPanelProps = {}) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([INITIAL_MESSAGE]);
+  const [messages, setMessages] = useState<PanelMessage[]>([INITIAL_MESSAGE]);
   const scrollRef = useRef<HTMLDivElement>(null);
   // 사용자가 바닥에 붙어 있는지. 위로 올려 읽는 중이면 자동 스크롤을 멈춘다.
   const stickToBottomRef = useRef(true);
@@ -184,7 +185,7 @@ export default function ChatPanel({
     }
   }
 
-  function updateLastAssistant(updater: (message: ChatMessage) => ChatMessage) {
+  function updateLastAssistant(updater: (message: PanelMessage) => PanelMessage) {
     setMessages((prev) => {
       const next = [...prev];
       for (let index = next.length - 1; index >= 0; index -= 1) {

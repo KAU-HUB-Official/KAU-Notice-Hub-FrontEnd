@@ -6,7 +6,7 @@ import { BackendApiError } from "@/server/notices/backend-notice-service";
 
 // 백엔드가 발급한 액세스 토큰(JWT)은 브라우저 JS가 읽을 수 없는 httpOnly 쿠키에만 둔다.
 // 브라우저는 프론트 /api/*만 호출하고, BFF route가 쿠키의 토큰을 Authorization 헤더로 붙인다.
-export const SESSION_COOKIE = "knh_session";
+const SESSION_COOKIE = "knh_session";
 // 카카오 인가 요청의 CSRF 방지 state와 로그인 뒤 돌아갈 경로. 콜백에서 확인하고 지운다.
 export const OAUTH_STATE_COOKIE = "knh_oauth_state";
 export const OAUTH_NEXT_COOKIE = "knh_oauth_next";

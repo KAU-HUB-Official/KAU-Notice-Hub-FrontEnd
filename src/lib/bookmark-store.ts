@@ -6,7 +6,7 @@ import { useEffect, useSyncExternalStore } from "react";
 // 별도 상태관리 라이브러리 없이 useSyncExternalStore로 구독한다.
 // 로그인 여부는 GET /api/bookmarks/ids의 응답(200 = 로그인, 401 = 로그아웃)으로 판단한다.
 
-export type AuthStatus = "loading" | "anonymous" | "authenticated";
+type AuthStatus = "loading" | "anonymous" | "authenticated";
 
 interface BookmarkState {
   status: AuthStatus;
@@ -59,7 +59,7 @@ export function loginHref(next?: string): string {
   return `/auth/kakao/login?next=${encodeURIComponent(path)}`;
 }
 
-export type ToggleResult = { ok: true } | { ok: false; login: true } | { ok: false; login: false; message: string };
+type ToggleResult = { ok: true } | { ok: false; login: true } | { ok: false; login: false; message: string };
 
 // 낙관적으로 바꾼 뒤 요청하고, 실패하면 되돌린다. 추가·삭제는 백엔드에서 멱등이다.
 export async function toggleBookmark(noticeId: string): Promise<ToggleResult> {
@@ -76,6 +76,17 @@ export async function toggleBookmark(noticeId: string): Promise<ToggleResult> {
   }
   setState({ status: "authenticated", ids: optimistic });
 
+  // 실패하면 그 사이 다른 토글이 바꾼 것은 두고, 이 공지만 원래대로 돌린다.
+  const revert = () => {
+    const reverted = new Set(state.ids);
+    if (wasBookmarked) {
+      reverted.add(noticeId);
+    } else {
+      reverted.delete(noticeId);
+    }
+    setState({ status: "authenticated", ids: reverted });
+  };
+
   try {
     const response = await fetch(`/api/bookmarks/${encodeURIComponent(noticeId)}`, {
       method: wasBookmarked ? "DELETE" : "PUT"
@@ -84,29 +95,16 @@ export async function toggleBookmark(noticeId: string): Promise<ToggleResult> {
       return { ok: true };
     }
 
-    const reverted = new Set(state.ids);
-    if (wasBookmarked) {
-      reverted.add(noticeId);
-    } else {
-      reverted.delete(noticeId);
-    }
-
     if (response.status === 401) {
       setState({ status: "anonymous", ids: new Set() });
       return { ok: false, login: true };
     }
 
-    setState({ status: "authenticated", ids: reverted });
+    revert();
     const payload = (await response.json().catch(() => null)) as { error?: string } | null;
     return { ok: false, login: false, message: payload?.error || "북마크를 변경하지 못했습니다." };
   } catch {
-    const reverted = new Set(state.ids);
-    if (wasBookmarked) {
-      reverted.add(noticeId);
-    } else {
-      reverted.delete(noticeId);
-    }
-    setState({ status: "authenticated", ids: reverted });
+    revert();
     return { ok: false, login: false, message: "네트워크 오류로 북마크를 변경하지 못했습니다." };
   }
 }

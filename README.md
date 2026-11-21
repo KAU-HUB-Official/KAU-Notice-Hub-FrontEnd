@@ -26,7 +26,7 @@ KAU Notice Hub 백엔드 API를 화면에서 탐색하고, 공지 기반 챗봇�
 
 요구사항:
 
-- Node.js 18+
+- Node.js 18.17+ (운영 Vercel은 20.x)
 - yarn
 - 상위 `BackEnd` FastAPI 서버
 
@@ -50,6 +50,12 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_GITHUB_URL=https://github.com/KAU-HUB-Official
 NEXT_PUBLIC_CONTACT_EMAIL=qktjwl123@gmail.com
 ```
+
+선택 환경변수(서버 전용, 설명은 `.env.example`과 `docs/DEPLOYMENT.md`):
+
+- `NOTICE_API_BASE_URL`: 서버에서만 다른 백엔드 주소를 쓸 때
+- `NOTICE_API_INTERNAL_TOKEN`: 백엔드 `INTERNAL_PROXY_TOKEN`과 같은 값. 설정하면 실제 브라우저 IP를 백엔드에 넘겨 IP별 요청 제한이 동작한다
+- `KAKAO_REST_API_KEY`, `KAKAO_REDIRECT_URI`: 카카오 로그인
 
 백엔드 실행:
 

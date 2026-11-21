@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { noticeService } from "@/server/notices";
-import { BackendApiError } from "@/server/notices/backend-notice-service";
+import { backendErrorResponse } from "@/server/notices/error-response";
 
 export const dynamic = "force-dynamic";
 
@@ -22,18 +22,6 @@ export async function GET(_: Request, context: RouteContext) {
 
     return NextResponse.json(notice);
   } catch (error) {
-    console.error("GET /api/notices/[id] failed:", error);
-
-    if (error instanceof BackendApiError) {
-      return NextResponse.json(
-        { error: error.message, detail: error.detail },
-        { status: error.status }
-      );
-    }
-
-    return NextResponse.json(
-      { error: "공지 상세를 불러오지 못했습니다." },
-      { status: 500 }
-    );
+    return backendErrorResponse("GET /api/notices/[id]", error, "공지 상세를 불러오지 못했습니다.");
   }
 }

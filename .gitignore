@@ -29,4 +29,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
-claude.md 
+claude.md
+
+# secret, Vercel 로컬 링크
+*.key
+.vercel

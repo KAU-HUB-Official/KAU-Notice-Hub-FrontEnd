@@ -17,7 +17,8 @@ import {
 import { headers as nextHeaders } from "next/headers";
 
 const DEFAULT_BACKEND_API_BASE_URL = "http://localhost:8000";
-const NOTICE_NAVIGATION_PAGE_SIZE = 200;
+// 백엔드 pageSize 상한(100)과 맞춘다. 더 크게 줘도 100으로 잘린다.
+const NOTICE_NAVIGATION_PAGE_SIZE = 100;
 
 export class BackendApiError extends Error {
   constructor(
