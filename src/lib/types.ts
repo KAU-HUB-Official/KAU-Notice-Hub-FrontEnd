@@ -1,4 +1,3 @@
-export type RawNotice = Record<string, unknown>;
 
 export interface NoticeAttachment {
   name: string;

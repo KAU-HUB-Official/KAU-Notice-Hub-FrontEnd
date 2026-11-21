@@ -1,4 +1,6 @@
 const DEFAULT_SITE_URL = "https://kau-notice-hub.app";
+const DEFAULT_GITHUB_URL = "https://github.com/KAU-HUB-Official";
+const DEFAULT_CONTACT_EMAIL = "qktjwl123@gmail.com";
 
 function resolveSiteUrl(): string {
   const fromEnv = process.env.NEXT_PUBLIC_SITE_URL?.trim();
@@ -17,6 +19,8 @@ export const siteConfig = {
   description:
     "한국항공대학교 공지를 한 곳에서 확인하고, 대상·홈페이지별 필터와 공지 기반 챗봇으로 필요한 정보를 빠르게 찾습니다.",
   url: resolveSiteUrl(),
+  githubUrl: process.env.NEXT_PUBLIC_GITHUB_URL?.trim() || DEFAULT_GITHUB_URL,
+  contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || DEFAULT_CONTACT_EMAIL,
   locale: "ko_KR",
   keywords: [
     "한국항공대학교",

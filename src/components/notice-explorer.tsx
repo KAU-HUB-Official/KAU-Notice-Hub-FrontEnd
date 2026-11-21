@@ -38,7 +38,8 @@ interface NoticeExplorerProps {
   initialFilters: NoticeExplorerFilters;
 }
 
-function buildApiParams(filters: NoticeExplorerFilters, page: number): URLSearchParams {
+// 목록 API 요청과 브라우저 URL이 함께 쓰는 필터 파라미터.
+function buildFilterParams(filters: NoticeExplorerFilters): URLSearchParams {
   const params = new URLSearchParams();
 
   if (filters.q) {
@@ -60,40 +61,22 @@ function buildApiParams(filters: NoticeExplorerFilters, page: number): URLSearch
   if (filters.target !== ALL_TARGETS) {
     params.set("target", filters.target);
   }
-
-  params.set("page", String(page));
-  params.set("pageSize", String(PAGE_SIZE));
 
   return params;
 }
 
+function buildApiParams(filters: NoticeExplorerFilters, page: number): URLSearchParams {
+  const params = buildFilterParams(filters);
+  params.set("page", String(page));
+  params.set("pageSize", String(PAGE_SIZE));
+  return params;
+}
+
 function buildPageQuery(filters: NoticeExplorerFilters, page: number): URLSearchParams {
-  const params = new URLSearchParams();
-
-  if (filters.q) {
-    params.set("q", filters.q);
-  }
-
-  if (filters.audienceGroup !== ALL_AUDIENCE_GROUPS) {
-    params.set("audience", filters.audienceGroup);
-  }
-
-  if (filters.sourceGroup !== ALL_SOURCE_GROUPS) {
-    params.set("group", filters.sourceGroup);
-  }
-
-  if (shouldUseSourceFilter(filters.audienceGroup) && filters.source !== ALL_SOURCES) {
-    params.set("source", filters.source);
-  }
-
-  if (filters.target !== ALL_TARGETS) {
-    params.set("target", filters.target);
-  }
-
+  const params = buildFilterParams(filters);
   if (page > 1) {
     params.set("page", String(page));
   }
-
   return params;
 }
 

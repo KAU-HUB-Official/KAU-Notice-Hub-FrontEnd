@@ -12,8 +12,7 @@ export const metadata: Metadata = {
   },
 };
 
-const CONTACT_EMAIL =
-  process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || "qktjwl123@gmail.com";
+const CONTACT_EMAIL = siteConfig.contactEmail;
 
 export default function AboutPage() {
   return (
